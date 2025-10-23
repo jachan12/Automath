@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="da">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Regnehistorie Spil</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .robot-checkbox-label {
+      margin-left: 8px;
+      font-size: 0.95em;
+      color: #1976d2;
+      vertical-align: middle;
+    }
+    #robot-checkbox:disabled + .robot-checkbox-label {
+      color: #b0bec5;
+    }
+    .remove-trin-btn {
+      background: #c62828;
+      color: #fff;
+      border: none;
+      border-radius: 5px;
+      padding: 2px 8px;
+      font-size: 0.9em;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .remove-trin-btn:hover {
+      background: #b71c1c;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Algoritme Matematik</h1>
+    <div class="subtitle">Tænk i algoritmer. Trin for trin løsninger på regnehistorier</div>
+  </header>
+
+  <div class="main-flex">
+    <aside id="shop-sidebar">
+      <section id="shop-section">
+        <h2>Shop</h2>
+        <div class="section-desc">Køb operatorer og robotter</div>
+        <div id="shop">
+          <div id="shop-operators"></div>
+        </div>
+      </section>
+    </aside>
+
+    <main>
+      <section id="score-section">
+        <span id="score">Point: 100</span>
+        <button id="reset-button">Nulstil spil</button>
+      </section>
+
+      <section id="level-section">
+        <h2>Vælg niveau</h2>
+        <div id="level-buttons">
+          <button class="level-btn" id="level-1-btn">Level 1</button>
+          <button class="level-btn" id="level-2-btn">Level 2</button>
+          <button class="level-btn" id="level-3-btn">Level 3</button>
+          <button class="level-btn" id="level-4-btn">Level 4</button>
+          <button class="level-btn" id="level-5-btn">Level 5</button>
+          <button class="level-btn" id="level-6-btn">Level 6</button>
+          <button class="level-btn" id="level-7-btn">Level 7</button>
+          <button class="level-btn" id="level-8-btn">Level 8</button>
+          <button class="level-btn" id="level-9-btn">Level 9</button>
+          <button class="level-btn" id="level-10-btn">Level 10</button>
+          <button class="level-btn" id="level-11-btn">Level 11</button>
+          <button class="level-btn" id="level-12-btn">Level 12</button>
+          <button class="level-btn" id="level-13-btn">Level 13</button>
+        </div>
+      </section>
+
+      <section id="regnehistorie-section">
+        <h2>Regnehistorie</h2>
+        <div id="regnehistorie">
+          <div id="regnehistorie-text"></div>
+        </div>
+      </section>
+
+      <section id="expression-section">
+        <h2>Byg dit regnestykke</h2>
+        <div class="section-desc">Sæt trin sammen ved at trække tal og operatorer ind i felterne. Tryk på "Tilføj nyt trin" for at lave flere udregninger.</div>
+        <div id="expression-area">
+          <div id="expression-container"></div>
+          <div class="button-row">
+            <button id="add-trin-button">Tilføj nyt trin</button>
+            <button id="calculate-button">Beregn</button>
+            <input type="checkbox" id="robot-checkbox">
+            <label for="robot-checkbox" class="robot-checkbox-label">Robot på level 1: Ingen robot</label>
+          </div>
+          <div id="result" class="result-box">Resultat: </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <footer>Lavet af Jacob Højgaard Hansen</footer>
+
+  <script src="utils.js"></script>
+  <script src="levels.js"></script>
+  <script src="shop.js"></script>
+  <script src="gameScene.js"></script>
+  <script src="main.js"></script>
+  <script src="point og robot.js"></script>
+</body>
+</html>
