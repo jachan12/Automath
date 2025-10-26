@@ -115,6 +115,7 @@ class Shop {
       data.count = (data.count || 0) + 1;       // øg tilgængeligt lager
       data.purchased = (data.purchased || 0) + 1; // øg historisk købt (bestemmer næste pris)
       this.render();
+      if (this.game && typeof this.game.saveProgress === 'function') this.game.saveProgress();
     } else {
       // insufficient points - silently fail
     }
@@ -127,6 +128,7 @@ class Shop {
       this.robot.purchased = (this.robot.purchased || 0) + 1;
       this.game.robotCount = this.robot.count;
       this.render();
+      if (this.game && typeof this.game.saveProgress === 'function') this.game.saveProgress();
     } else {
       // insufficient points
     }
@@ -137,6 +139,7 @@ class Shop {
     if (data && data.count > 0) {
       data.count -= 1; // bruger kun lager; purchased påvirkes ikke
       this.render();
+      if (this.game && typeof this.game.saveProgress === 'function') this.game.saveProgress();
       return true;
     }
     return false;
@@ -147,6 +150,7 @@ class Shop {
       this.robot.count -= 1;
       this.game.robotCount = this.robot.count;
       this.render();
+      if (this.game && typeof this.game.saveProgress === 'function') this.game.saveProgress();
       return true;
     }
     return false;

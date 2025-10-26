@@ -113,15 +113,30 @@ class Game {
   }
 
   saveProgress() {
+    const shopState = { operators: {}, robot: {} };
+    if (this.shop) {
+      for (const [op, data] of Object.entries(this.shop.operators)) {
+        shopState.operators[op] = {
+          count: data.count || 0,
+          purchased: data.purchased || 0
+        };
+      }
+      shopState.robot = {
+        count: this.shop.robot?.count || 0,
+        purchased: this.shop.robot?.purchased || 0
+      };
+    }
+
     const progress = {
       points: this.points,
       robotCount: this.robotCount,
+      shop: shopState,
       assignedRobots: Array.from(this.assignedRobots.entries()).map(([key, value]) => ({ key, value: { isActive: value.isActive } })), // Don't save intervalId
       completedLevels: Array.from(this.completedLevels),
       levelValuesCache: this.scene.levelValuesCache,
     };
     localStorage.setItem('gameProgress', JSON.stringify(progress));
-    console.log('Progress saved');
+    console.log('Progress saved (incl. shop state)');
   }
 
   loadProgress() {
@@ -129,25 +144,41 @@ class Game {
     if (savedProgress) {
       const progress = JSON.parse(savedProgress);
       this.points = progress.points || 1000;
-      this.robotCount = progress.robotCount || 0;
+      // restore shop state first if present (so robotCount and shop UI match)
+      if (progress.shop && this.shop) {
+        for (const [op, sdata] of Object.entries(progress.shop.operators || {})) {
+          if (this.shop.operators[op]) {
+            this.shop.operators[op].count = sdata.count || 0;
+            this.shop.operators[op].purchased = sdata.purchased || 0;
+          }
+        }
+        if (progress.shop.robot && this.shop.robot) {
+          this.shop.robot.count = progress.shop.robot.count || 0;
+          this.shop.robot.purchased = progress.shop.robot.purchased || 0;
+        }
+        // reflect robotCount
+        this.robotCount = this.shop.robot.count || 0;
+      } else {
+        this.robotCount = progress.robotCount || 0;
+      }
+
       this.completedLevels = new Set(progress.completedLevels || []);
       this.scene.levelValuesCache = progress.levelValuesCache || {};
       console.log(`Loading progress: ${JSON.stringify(progress.assignedRobots)}`);
 
       // Ensure we restore assignedRobots and restart intervals only for those that were active.
-      progress.assignedRobots.forEach(({ key, value }) => {
-        // store with no intervalId and default inactive, then start interval only if value.isActive
+      (progress.assignedRobots || []).forEach(({ key, value }) => {
         this.assignedRobots.set(key, { intervalId: null, isActive: false });
         if (value.isActive) {
-          // toggleRobotForLevel will set isActive=true and create interval
           this.toggleRobotForLevel(key);
         }
       });
 
       console.log(`Progress loaded. Assigned robots: ${JSON.stringify([...this.assignedRobots.entries()])}`);
+      // update UI now that shop state is restored
+      if (this.shop) this.shop.render();
       this.scene.setCurrentLevel(1); // Ensure start on level 1
       this.scene.updateRobotCheckbox(); // Ensure UI reflects robot state
-      // opdater level-knapper (vis løst / robot)
       this.renderLevelStates();
     } else {
       console.log('No saved progress found. Starting fresh.');
