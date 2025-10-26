@@ -1,15 +1,15 @@
 class Shop {
   constructor(game) {
     this.game = game;
-    // hver item har basePrice og multiplier; price beregnes eksponentielt ud fra nuværende count
+    // count = antal tilgængelige på lager; purchased = hvor mange der er købt historisk (pris-basis)
     this.operators = {
-      '+': { count: 1, basePrice: 15, multiplier: 1.5 },
-      '-': { count: 0, basePrice: 15, multiplier: 1.5 },
-      '*': { count: 0, basePrice: 20, multiplier: 1.5 },
-      '/': { count: 0, basePrice: 25, multiplier: 1.5 }
+      '+': { count: 1, purchased: 1, basePrice: 15, multiplier: 1.5 },
+      '-': { count: 0, purchased: 0, basePrice: 15, multiplier: 1.5 },
+      '*': { count: 0, purchased: 0, basePrice: 20, multiplier: 1.5 },
+      '/': { count: 0, purchased: 0, basePrice: 25, multiplier: 1.5 }
     };
-    // robot følger samme mønster (pris for næste robot beregnes ud fra antal allerede ejet)
-    this.robot = { count: 0, basePrice: 100, multiplier: 1.5 };
+    // robot følger samme mønster (pris for næste robot beregnes ud fra antal købt)
+    this.robot = { count: 0, purchased: 0, basePrice: 100, multiplier: 1.5 };
 
     document.addEventListener('points-changed', () => this.render());
     this.render();
@@ -19,14 +19,15 @@ class Shop {
   getOperatorPrice(operator) {
     const data = this.operators[operator];
     if (!data) return Infinity;
-    const nextIndex = data.count; // pris for næste enhed: base * multiplier^currentCount
+    const nextIndex = data.purchased || 0; // pris baseret på hvor mange der er købt historisk
     return Math.ceil(data.basePrice * Math.pow(data.multiplier || 1.5, nextIndex));
   }
 
   // beregn pris for næste robot
   getRobotPrice() {
     const r = this.robot;
-    return Math.ceil(r.basePrice * Math.pow(r.multiplier || 1.5, r.count));
+    const nextIndex = r.purchased || 0;
+    return Math.ceil(r.basePrice * Math.pow(r.multiplier || 1.5, nextIndex));
   }
 
   render() {
@@ -108,20 +109,22 @@ class Shop {
   buyOperator(operator) {
     const data = this.operators[operator];
     if (!data) return;
-    if (data.count >= 10) return;
+    if ((data.purchased || 0) >= 10) return; // begrænsning baseret på hvor mange købt
     const price = this.getOperatorPrice(operator);
     if (this.game.spendPoints(price)) {
-      data.count += 1;
+      data.count = (data.count || 0) + 1;       // øg tilgængeligt lager
+      data.purchased = (data.purchased || 0) + 1; // øg historisk købt (bestemmer næste pris)
       this.render();
     } else {
-      // insufficient points - silently fail (som tidligere)
+      // insufficient points - silently fail
     }
   }
 
   buyRobot() {
     const price = this.getRobotPrice();
     if (this.game.spendPoints(price)) {
-      this.robot.count += 1;
+      this.robot.count = (this.robot.count || 0) + 1;
+      this.robot.purchased = (this.robot.purchased || 0) + 1;
       this.game.robotCount = this.robot.count;
       this.render();
     } else {
@@ -130,8 +133,9 @@ class Shop {
   }
 
   useOperator(operator) {
-    if (this.operators[operator].count > 0) {
-      this.operators[operator].count -= 1;
+    const data = this.operators[operator];
+    if (data && data.count > 0) {
+      data.count -= 1; // bruger kun lager; purchased påvirkes ikke
       this.render();
       return true;
     }
@@ -155,12 +159,17 @@ class Shop {
     if (this.operators) {
       for (const key of Object.keys(this.operators)) {
         this.operators[key].count = 0;
+        this.operators[key].purchased = 0;
       }
       // '+' startede med 1 i constructor
-      if (this.operators['+']) this.operators['+'].count = 1;
+      if (this.operators['+']) {
+        this.operators['+'].count = 1;
+        this.operators['+'].purchased = 1;
+      }
     }
     if (this.robot) {
       this.robot.count = 0;
+      this.robot.purchased = 0;
     }
 
     // Sørg for at Game holder samme værdi

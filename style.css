@@ -268,6 +268,7 @@ h2 {
 }
 
 .level-btn {
+  position: relative; /* så robot-indikator kan placeres relativt */
   background: #1976d2;
   color: #fff;
   border: none;
@@ -280,6 +281,29 @@ h2 {
 .level-btn:hover, .level-btn.active {
   background: #388e3c;
   color: #fff;
+}
+
+/* Løst niveau: orange baggrund */
+.level-btn.solved {
+  background: #ff9800 !important;
+  color: #fff;
+}
+
+/* Robot indikator (lille emoji over knappen) */
+.robot-indicator {
+  position: absolute;
+  top: -10px;
+  right: -8px;
+  font-size: 0.95em;
+  line-height: 1;
+  background: transparent;
+  pointer-events: none;
+  transform: translateY(-2px);
+}
+
+/* Bevar hover/active udseende for aktive knapper */
+.level-btn.active {
+  box-shadow: 0 0 0 3px rgba(255,152,0,0.12);
 }
 
 footer {

@@ -382,6 +382,10 @@ class GameScene {
     this.updateDroppedValues();
     this.updateRobotCheckbox();
     if (window.resetCooldown) window.resetCooldown();
+    // Sørg for at Game opdaterer level-knapperne (active/solved/robot)
+    if (window.game && typeof window.game.renderLevelStates === 'function') {
+      window.game.renderLevelStates();
+    }
     console.log(`Set current level to ${n}`);
   }
 

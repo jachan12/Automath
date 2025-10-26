@@ -4,6 +4,15 @@
   const POINTS_PER_LEVEL = 2;
   const COOLDOWN_MS = 2000;
 
+  // cooldown for at forhindre spam af point per niveau (3000ms)
+  const LEVEL_POINT_COOLDOWN_MS = 3000;
+  const levelCooldowns = new Map(); // key: level, value: timestamp (ms)
+
+  // Exponer reset-funktion så resetProgress kan rydde disse
+  window.resetLevelCooldowns = () => {
+    levelCooldowns.clear();
+  };
+
   const btn = document.getElementById('calculate-button');
 
   function showFeedback(msg, color = "#1976d2") {
@@ -33,7 +42,16 @@
     const facit = window.Levels?.getFacit?.();
     const level = window.game.scene.getCurrentLevel() || 1;
 
+    // check per-level cooldown (forhindrer spam ved at skifte/klikke niveau osv.)
+    const last = levelCooldowns.get(level) || 0;
+    if (Date.now() - last < LEVEL_POINT_COOLDOWN_MS) {
+      showFeedback("Vent lidt før du prøver igen på dette niveau...", "#c62828");
+      return;
+    }
+
     if (Number.isFinite(facit) && Number.isFinite(studentValue) && Math.abs(facit - studentValue) < 1e-9) {
+      // registrer tidspunkt før points tildeles (blokér gentildeling i cooldown-periode)
+      levelCooldowns.set(level, Date.now());
       const pts = BASE_POINTS + (level - 1) * POINTS_PER_LEVEL;
       if (window.game && typeof window.game.addPoints === 'function') {
         window.game.addPoints(pts);
