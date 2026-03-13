@@ -7,28 +7,143 @@ function getRandomInt(min, max) {
 
 // --- Level-definitioner ---
 const levels = {
-  1: { min: 1, max: 5, numVars: 2, expr: "A+B", story: "Per har {0} æbler, han får {1} mere. Hvor mange har han nu?" },
-  2: { min: 1, max: 10, numVars: 2, expr: "A-B", story: "Anna har {0} kugler, hun giver {1} væk. Hvor mange har hun tilbage?" },
-  3: { min: 2, max: 8, numVars: 2, expr: "A*B", story: "Hvis du har {0} poser med {1} kiks i hver, hvor mange kiks har du i alt?" },
-  4: { min: 2, max: 12, numVars: 2, expr: "A/B", story: "Der er {0} chokolader, som skal fordeles mellem {1} børn. Hvor mange får hvert barn?" },
-  5: { min: 1, max: 10, numVars: 3, expr: "A+B+C", story: "Poul har {0} æg og køber {1} mere fra Peter {2} mere fra Lisa. Hvor mange æg har Poul?" },
-  6: { min: 1, max: 20, numVars: 3, expr: "A-B+C", story: "Lise har {0} bøger, hun låner {1} ud og køber {2} nye. Hvor mange bøger har Lise nu?" },
-  7: { min: 1, max: 10, numVars: 3, expr: "A+B-C", story: "Kasper har {0} biler, han køber {1} flere og sælger {2}. Hvor mange biler har han nu?" },
-  8: { min: 1, max: 10, numVars: 3, expr: "A*B-C", story: "Sofie har {0} skåle med slik. Der er {1} stykker slik i hver skål. hun hælder alt sammen og spiser {2} stykker. Hvor mange stykker har Sofie nu?" },
-  9: { min: 1, max: 10, numVars: 3, expr: "A*C+B", story: "Der er {0} æbler på hvert træ. Der er {2} træer. Mille plukker dem alle og putter dem i bakken som i forvejen har {1} æbler. Hvor mange æbler ender hun med at have?" },
-  10: { min: 1, max: 5, numVars: 4, expr: "A+B-C*D", story: "Mette køber {0} blomster om mandagen og {1} blomster om tirsdagen. Hun sælger {2} blomster til {3} forskellige kunder. Hvor mange blomster har hun tilbage?" },
-  11: { min: 1, max: 10, numVars: 4, expr: "A-B-C*D", story: "{0}-{1}-{2}*{3}" },
-  12: { min: 1, max: 10, numVars: 4, expr: "(A+B)/(C-D)", story: "({0}+{1})/({2}-{3})" },
-  13: { min: 1, max: 10, numVars: 5, expr: "A+B+C-D*E", story: "{0}+{1}+{2}-{3}*{4}" },
+  1: { 
+    expr: "A+B", 
+    story: "Per har {0} æbler, han får {1} mere. Hvor mange har han nu?",
+    ranges: { 0: { min: 1, max: 5 }, 1: { min: 1, max: 5 } }
+  },
+  2: { 
+    expr: "A-B", 
+    story: "Anna har {0} kugler, hun giver {1} væk. Hvor mange har hun tilbage?",
+    ranges: { 0: { min: 5, max: 10 }, 1: { min: 1, max: 5 } }
+  },
+  3: { 
+    expr: "A*B", 
+    story: "Hvis du har {0} poser med {1} kiks i hver, hvor mange kiks har du i alt?",
+    ranges: { 0: { min: 2, max: 8 }, 1: { min: 2, max: 8 } }
+  },
+  4: { 
+    expr: "A/B", 
+    story: "Der er {0} chokolader, som skal fordeles mellem {1} børn. Hvor mange får hvert barn?",
+    ranges: { 0: { min: 6, max: 12 }, 1: { min: 2, max: 6 } }
+  },
+  5: { 
+    expr: "A+B+C", 
+    story: "Poul har {0} æg og køber {1} mere fra Peter og {2} mere fra Lisa. Hvor mange æg har Poul?",
+    ranges: { 0: { min: 1, max: 10 }, 1: { min: 1, max: 10 }, 2: { min: 1, max: 10 } }
+  },
+  6: { 
+    expr: "A-B+C", 
+    story: "Lise har {0} bøger, hun låner {1} ud og køber {2} nye. Hvor mange bøger har Lise nu?",
+    ranges: { 0: { min: 10, max: 20 }, 1: { min: 1, max: 10 }, 2: { min: 1, max: 20 } }
+  },
+  7: { 
+    expr: "A+B-C", 
+    story: "Kasper har {0} biler, han køber {1} flere og sælger {2}. Hvor mange biler har han nu?",
+    ranges: { 0: { min: 5, max: 15 }, 1: { min: 5, max: 15 }, 2: { min: 2, max: 10 } }
+  },
+  8: { 
+    expr: "A*B-C", 
+    story: "Sofie har {0} skåle med slik. Der er {1} stykker slik i hver skål. Hun hælder alt sammen og spiser {2} stykker. Hvor mange stykker har Sofie nu?",
+    ranges: { 0: { min: 2, max: 10 }, 1: { min: 4, max: 10 }, 2: { min: 1, max: 7 } }
+  },
+  9: { 
+    expr: "A*C+B", 
+    story: "Der er {0} æbler på hvert træ. Der er {2} træer. Mille plukker dem alle og putter dem i bakken som i forvejen har {1} æbler. Hvor mange æbler ender hun med at have?",
+    ranges: { 0: { min: 2, max: 10 }, 1: { min: 2, max: 10 }, 2: { min: 5, max: 10 } }
+  },
+  10: { 
+    expr: "A+B-C*D", 
+    story: "Mette køber {0} blomster om mandagen og {1} blomster om tirsdagen. Hun sælger {2} blomster til hver af de {3} forskellige kunder. Hvor mange blomster har hun tilbage?",
+    ranges: { 0: { min: 10, max: 15 }, 1: { min: 7, max: 14 }, 2: { min: 1, max: 5 }, 3: { min: 1, max: 3 } }
+  },
+  11: { 
+    expr: "(A+B)*C - D", 
+    story: "Der er {0} drenge og {1} piger i en klasse. Hver elev får {2} klistermærker. Læreren tager {3} klistermærker tilbage. Hvor mange klistermærker er der uddelt i alt?",
+    ranges: { 0: { min: 10, max: 15 }, 1: { min: 10, max: 15 }, 2: { min: 1, max: 5 }, 3: { min: 1, max: 20 } }
+  },
+  12: { 
+    expr: "A*(B-C)", 
+    story: "Der er {0} kasser. Hver kasse indeholder {1} frugter, men {2} af dem er dårlige i hver kasse. Hvor mange gode frugter er der i alt?",
+    ranges: { 0: { min: 5, max: 12 }, 1: { min: 5, max: 12 }, 2: { min: 1, max: 10 } }
+  },
+  13: { 
+    expr: "A+B-D+E", 
+    story: "Der er {0} bøger på hylden, og bibliotekaren sætter {1} flere op. På bordet ligger {2} blyanter. Senere bliver {3} bøger lånt ud, og bagefter kommer der {4} nye bøger tilbage. Hvor mange bøger er der nu på hylden?",
+    ranges: { 0: { min: 10, max: 20 }, 1: { min: 3, max: 8 }, 2: { min: 5, max: 12 }, 3: { min: 2, max: 6 }, 4: { min: 1, max: 5 } }
+  },
+  14: { 
+    expr: "A*(B-C)+D", 
+    story: "Der er {0} kasser med {1} æbler i hver. {2} æbler i hver kasse er dårlige. Der ligger også {3} ekstra æbler på bordet, og ved siden af står {4} tomme kurve. Hvor mange gode æbler er der i alt?",
+    ranges: { 0: { min: 4, max: 8 }, 1: { min: 5, max: 9 }, 2: { min: 1, max: 3 }, 3: { min: 3, max: 8 }, 4: { min: 2, max: 6 } }
+  },
+  15: { 
+    expr: "A+B-C", 
+    story: "Der er {0} børn på legepladsen, og {1} flere kommer til. Ved gyngerne står der {2} cykler. Senere går {3} børn hjem. Hvor mange børn er der tilbage?",
+    ranges: { 0: { min: 10, max: 20 }, 1: { min: 3, max: 8 }, 2: { min: 4, max: 12 }, 3: { min: 1, max: 5 } }
+  },
+  16: { 
+    expr: "A*(B-C)+D*(E-C)", 
+    story: "Der er {0} kasser med {1} kuglepenne i hver, men {2} virker ikke i hver kasse. Derudover er der {3} pakker med {4} kuglepenne i hver. På lærerens bord ligger nogle linealer. Hvor mange kuglepenne virker i alt?",
+    ranges: { 0: { min: 4, max: 8 }, 1: { min: 5, max: 9 }, 2: { min: 1, max: 3 }, 3: { min: 3, max: 6 }, 4: { min: 4, max: 7 } }
+  },
+  17: { 
+    expr: "A*(B-C)+D*(E-F)", 
+    story: "Jesper skal til mekanikerenDer er {0} kasser med {1} legetøj i hver, men {2} er ødelagte pr. kasse. Derudover er der {3} ekstra poser med {4} legetøj i hver, dog er {5} stykker legetøj ødelagt pr. pose . Hvor mange gode stykker legetøj er der i alt?",
+    ranges: { 0: { min: 5, max: 10 }, 1: { min: 5, max: 8 }, 2: { min: 1, max: 4 }, 3: { min: 5, max: 10 }, 4: { min: 2, max: 5 }, 5: { min: 2, max: 2 }}
+  },
+  18: { 
+    expr: "A*(B-C)+D*(E-F)", 
+    story: "Der er {0} kasser med {1} legetøj i hver, men {2} er ødelagte pr. kasse. Derudover er der {3} ekstra poser med {4} legetøj i hver, dog er {5} stykker legetøj ødelagt pr. pose . Hvor mange gode stykker legetøj er der i alt?",
+    ranges: { 0: { min: 5, max: 10 }, 1: { min: 5, max: 8 }, 2: { min: 1, max: 4 }, 3: { min: 5, max: 10 }, 4: { min: 2, max: 5 }, 5: { min: 2, max: 2 }}
+  },
+  19: { 
+    expr: "A*(B-C)+D*(E-F)", 
+    story: "Der er {0} kasser med {1} legetøj i hver, men {2} er ødelagte pr. kasse. Derudover er der {3} ekstra poser med {4} legetøj i hver, dog er {5} stykker legetøj ødelagt pr. pose . Hvor mange gode stykker legetøj er der i alt?",
+    ranges: { 0: { min: 5, max: 10 }, 1: { min: 5, max: 8 }, 2: { min: 1, max: 4 }, 3: { min: 5, max: 10 }, 4: { min: 2, max: 5 }, 5: { min: 2, max: 2 }}
+  },
+  20: { 
+    expr: "A*(B-C)+D*(E-F)", 
+    story: "Der er {0} kasser med {1} legetøj i hver, men {2} er ødelagte pr. kasse. Derudover er der {3} ekstra poser med {4} legetøj i hver, dog er {5} stykker legetøj ødelagt pr. pose . Hvor mange gode stykker legetøj er der i alt?",
+    ranges: { 0: { min: 5, max: 10 }, 1: { min: 5, max: 8 }, 2: { min: 1, max: 4 }, 3: { min: 5, max: 10 }, 4: { min: 2, max: 5 }, 5: { min: 2, max: 2 }}
+  },
+  21: { 
+    expr: "A*(B-C)+D*(E-F)", 
+    story: "Der er {0} kasser med {1} legetøj i hver, men {2} er ødelagte pr. kasse. Derudover er der {3} ekstra poser med {4} legetøj i hver, dog er {5} stykker legetøj ødelagt pr. pose . Hvor mange gode stykker legetøj er der i alt?",
+    ranges: { 0: { min: 5, max: 10 }, 1: { min: 5, max: 8 }, 2: { min: 1, max: 4 }, 3: { min: 5, max: 10 }, 4: { min: 2, max: 5 }, 5: { min: 2, max: 2 }}
+  },
+  22: { 
+    expr: "A*(B-C)+D*(E-F)", 
+    story: "Der er {0} kasser med {1} legetøj i hver, men {2} er ødelagte pr. kasse. Derudover er der {3} ekstra poser med {4} legetøj i hver, dog er {5} stykker legetøj ødelagt pr. pose . Hvor mange gode stykker legetøj er der i alt?",
+    ranges: { 0: { min: 5, max: 10 }, 1: { min: 5, max: 8 }, 2: { min: 1, max: 4 }, 3: { min: 5, max: 10 }, 4: { min: 2, max: 5 }, 5: { min: 2, max: 2 }}
+  },
+  23: { 
+    expr: "A*(B-C)+D*(E-F)", 
+    story: "Der er {0} kasser med {1} legetøj i hver, men {2} er ødelagte pr. kasse. Derudover er der {3} ekstra poser med {4} legetøj i hver, dog er {5} stykker legetøj ødelagt pr. pose . Hvor mange gode stykker legetøj er der i alt?",
+    ranges: { 0: { min: 5, max: 10 }, 1: { min: 5, max: 8 }, 2: { min: 1, max: 4 }, 3: { min: 5, max: 10 }, 4: { min: 2, max: 5 }, 5: { min: 2, max: 2 }}
+  },
+  24: { 
+    expr: "A*(B-C)+D*(E-F)", 
+    story: "Der er {0} kasser med {1} legetøj i hver, men {2} er ødelagte pr. kasse. Derudover er der {3} ekstra poser med {4} legetøj i hver, dog er {5} stykker legetøj ødelagt pr. pose . Hvor mange gode stykker legetøj er der i alt?",
+    ranges: { 0: { min: 5, max: 10 }, 1: { min: 5, max: 8 }, 2: { min: 1, max: 4 }, 3: { min: 5, max: 10 }, 4: { min: 2, max: 5 }, 5: { min: 2, max: 2 }}
+  },
+  25: { 
+    expr: "A+B+C+D+E+F+G+H+I+J", 
+    story: "Der er {0} kasser med {1} bolde i hver, men {2} er flade pr. kasse. Derudover er der {3} poser med {4} bolde i hver, hvor {5} mangler luft. Ved siden af står {6} kurve med {7} bolde i hver, men {8} i hver kurv er ødelagte. Til sidst kommer der {9} ekstra bolde. Hvor mange gode bolde er der i alt?",
+    ranges: { 0: { min: 3, max: 6 }, 1: { min: 6, max: 10 }, 2: { min: 1, max: 3 }, 3: { min: 3, max: 6 }, 4: { min: 5, max: 9 }, 5: { min: 1, max: 3 }, 6: { min: 2, max: 5 }, 7: { min: 4, max: 8 }, 8: { min: 1, max: 3 }, 9: { min: 3, max: 7 } }
+  },
+
+  
+  // ... tilføj flere levels efter behov
 };
 
 // --- Controller for historien + facit (op til 10 variable A..J) ---
 const gameScene = {
-  regnehistorieTal: [], // array af tal i historien (maks 10)
-  regnehistorieText: '', // tekstskabelon med {0}..{9}
-  variables: {}, // fx {A: 3, B: 4, C: ...}
-  correctExpr: '', // fx "A+B*C"
-  facit: null, // beregnet facit-tal
+  regnehistorieTal: [],
+  regnehistorieText: '',
+  variables: {},
+  correctExpr: '',
+  facit: null,
   varNames: ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J'],
 
   evaluateExpr(exprStr) {
@@ -65,7 +180,11 @@ const gameScene = {
   },
 
   generateStory(level) {
-    const cfg = levels[level] || { min: 1, max: 10, numVars: 2, expr: "A+B", story: "{0} og {1}" };
+    const cfg = levels[level] || { 
+      expr: "A+B", 
+      story: "{0} og {1}",
+      ranges: { 0: { min: 1, max: 10 }, 1: { min: 1, max: 10 } }
+    };
     const numVars = this.inferNumVars(cfg);
     const vars = this.varNames.slice(0, numVars);
 
@@ -77,7 +196,9 @@ const gameScene = {
       this.variables = {};
       this.regnehistorieTal = [];
       vars.forEach((name, idx) => {
-        const tal = getRandomInt(cfg.min, cfg.max);
+        // brug individuelle ranges hvis tilgængeligt, ellers fallback til min/max
+        const rangeObj = cfg.ranges?.[idx] || { min: cfg.min || 1, max: cfg.max || 10 };
+        const tal = getRandomInt(rangeObj.min, rangeObj.max);
         this.variables[name] = tal;
         this.regnehistorieTal.push(tal);
       });

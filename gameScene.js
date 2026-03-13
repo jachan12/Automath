@@ -51,17 +51,22 @@ class GameScene {
 
     for (let i = 1; i <= this.trinCount; i++) {
       const resEl = document.getElementById(`trin${i}-resultat`);
-      const numericValue = resEl?.dataset?.value ?? `trin${i}`;
-      container.appendChild(this.createDraggable(`trin${i}`, `trin${i}`, numericValue));
+      // gem trin-referensen i value, men vis "trin#" som label
+      const numericValue = resEl?.dataset?.value ?? '';
+      container.appendChild(this.createDraggable(`trin${i}`, `trin${i}`, `trin${i}`, numericValue));
     }
   }
 
-  createDraggable(label, id = null, value = null) {
+  createDraggable(label, id = null, value = null, underlyingValue = null) {
     const span = document.createElement('span');
     span.textContent = label;
     span.classList.add('draggable');
     span.draggable = true;
-    span.dataset.value = value ?? label;
+    span.dataset.value = value ?? label; // hvad der bliver delt ved drag
+    // hvis underlyingValue findes, vis det som tooltip
+    if (underlyingValue) {
+      span.title = `${underlyingValue}`;
+    }
     if (id) span.id = id;
 
     Object.assign(span.style, {
@@ -184,10 +189,21 @@ class GameScene {
         targetBox.dataset.value = val;
         targetBox.classList.add('filled');
       }
+    } else if (val.startsWith('hist_')) {
+      const varName = val.slice(5); // "A", "B" osv.
+      const currentTal = window.Levels.variables[varName];
+      targetBox.textContent = currentTal;
+      targetBox.dataset.value = val;
+      targetBox.classList.add('filled');
     } else if (val.startsWith('hist')) {
       const idx = parseInt(val.slice(4));
       const currentTal = window.Levels.regnehistorieTal[idx];
       targetBox.textContent = currentTal;
+      targetBox.dataset.value = val;
+      targetBox.classList.add('filled');
+    } else if (/^trin\d+$/.test(val)) {
+      // Når man dropper et trin, vis "trin#" i boksen
+      targetBox.textContent = val;
       targetBox.dataset.value = val;
       targetBox.classList.add('filled');
     } else if (!isNaN(val) || /^trin\d+$/.test(val)) {
@@ -215,6 +231,15 @@ class GameScene {
       return;
     }
 
+    // Før vi sletter trinnet: returner alle operatorer i det trin til shoppen
+    ['tal1', 'op', 'tal2'].forEach(field => {
+      const el = document.getElementById(`trin${trinIndex}-${field}`);
+      const val = el?.dataset.value;
+      if (val && Object.keys(this.shop.operators).includes(val)) {
+        this.shop.operators[val].count += 1;
+      }
+    });
+
     const existingValues = { ...this.levelValuesCache[this.currentLevel] } || {};
     for (let i = trinIndex; i < this.trinCount; i++) {
       ['tal1', 'op', 'tal2', 'resultat'].forEach(field => {
@@ -234,6 +259,9 @@ class GameScene {
     this.trinCount--;
     this.levelValuesCache[this.currentLevel] = existingValues;
     this.renderExpressionArea(existingValues);
+    // Opdater shoppen og gem progress efter returnering af operatorer
+    this.shop.render();
+    if (this.game && typeof this.game.saveProgress === 'function') this.game.saveProgress();
     this.calculateResult();
   }
 
@@ -270,7 +298,16 @@ class GameScene {
 
       const trinDraggable = document.getElementById(`trin${i}`);
       if (trinDraggable) {
-        trinDraggable.dataset.value = Number.isFinite(numeric) ? String(numeric) : '';
+        // VIGTIGT: dataset.value skal ALTID være trin#, aldrig det numeriske tal
+        trinDraggable.dataset.value = `trin${i}`;
+        // Gem det numeriske tal i et separat data-attribut for tooltip
+        if (Number.isFinite(numeric)) {
+          trinDraggable.setAttribute('data-numeric', String(numeric));
+          trinDraggable.title = `${numeric}`;
+        } else {
+          trinDraggable.removeAttribute('data-numeric');
+          trinDraggable.title = '';
+        }
         trinDraggable.textContent = `trin${i}`;
       }
     }
@@ -294,16 +331,17 @@ class GameScene {
 
   resolveValue(val, trinValues) {
     if (val == null || val === '') return null;
+    // hvis værdien er en trin-reference (trin1, trin2 osv), slå op i trinValues
+    if (/^trin\d+$/.test(val)) {
+      const v = trinValues[val];
+      return Number.isFinite(v) ? v : null;
+    }
     if (val.startsWith('hist')) {
       const idx = parseInt(val.slice(4));
       const histVal = window.Levels.regnehistorieTal[idx];
       return Number.isFinite(histVal) ? histVal : null;
     }
     if (!isNaN(val)) return Number(val);
-    if (/^trin\d+$/.test(val)) {
-      const v = trinValues[val];
-      return Number.isFinite(v) ? v : null;
-    }
     return null;
   }
 

@@ -177,12 +177,21 @@ class Game {
       console.log(`Progress loaded. Assigned robots: ${JSON.stringify([...this.assignedRobots.entries()])}`);
       // update UI now that shop state is restored
       if (this.shop) this.shop.render();
-      this.scene.setCurrentLevel(1); // Ensure start on level 1
+      // Ensure the level content is generated and rendered (generateStory + renderRegnehistorie)
+      if (window.Levels && typeof window.Levels.loadLevel === 'function') {
+        window.Levels.loadLevel(1);
+      } else {
+        this.scene.setCurrentLevel(1);
+      }
       this.scene.updateRobotCheckbox(); // Ensure UI reflects robot state
       this.renderLevelStates();
     } else {
       console.log('No saved progress found. Starting fresh.');
-      this.scene.setCurrentLevel(1); // Default to level 1 if no progress
+      if (window.Levels && typeof window.Levels.loadLevel === 'function') {
+        window.Levels.loadLevel(1);
+      } else {
+        this.scene.setCurrentLevel(1);
+      }
     }
   }
 
@@ -235,7 +244,7 @@ class Game {
   // Tilføjet: opdater level-knapperne så de viser løst (orange), aktiv, og evt. robot-indikator
   renderLevelStates() {
     const current = this.scene?.getCurrentLevel?.() || 1;
-    for (let i = 1; i <= 13; i++) {
+    for (let i = 1; i <= 100; i++) {
       const btn = document.getElementById(`level-${i}-btn`);
       if (!btn) continue;
       // active class

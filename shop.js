@@ -109,7 +109,7 @@ class Shop {
   buyOperator(operator) {
     const data = this.operators[operator];
     if (!data) return;
-    if ((data.purchased || 0) >= 10) return; // begrænsning baseret på hvor mange købt
+    if ((data.purchased || 0) >= 1000) return; // begrænsning baseret på hvor mange købt
     const price = this.getOperatorPrice(operator);
     if (this.game.spendPoints(price)) {
       data.count = (data.count || 0) + 1;       // øg tilgængeligt lager
