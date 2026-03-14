@@ -78,7 +78,7 @@ const levels = {
     ranges: { 0: { min: 4, max: 8 }, 1: { min: 5, max: 9 }, 2: { min: 1, max: 3 }, 3: { min: 3, max: 8 }, 4: { min: 2, max: 6 } }
   },
   15: { 
-    expr: "A+B-C", 
+    expr: "A+B-D", 
     story: "Der er {0} børn på legepladsen, og {1} flere kommer til. Ved gyngerne står der {2} cykler. Senere går {3} børn hjem. Hvor mange børn er der tilbage?",
     ranges: { 0: { min: 10, max: 20 }, 1: { min: 3, max: 8 }, 2: { min: 4, max: 12 }, 3: { min: 1, max: 5 } }
   },
