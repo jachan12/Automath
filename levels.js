@@ -83,7 +83,7 @@ const levels = {
     ranges: { 0: { min: 10, max: 20 }, 1: { min: 3, max: 8 }, 2: { min: 4, max: 12 }, 3: { min: 1, max: 5 } }
   },
   16: { 
-    expr: "A*(B-C)+D*(E-C)", 
+    expr: "A*(B-C)+D*E", 
     story: "Der er {0} kasser med {1} kuglepenne i hver, men {2} virker ikke i hver kasse. Derudover er der {3} pakker med {4} kuglepenne i hver. På lærerens bord ligger nogle linealer. Hvor mange kuglepenne virker i alt?",
     ranges: { 0: { min: 4, max: 8 }, 1: { min: 5, max: 9 }, 2: { min: 1, max: 3 }, 3: { min: 3, max: 6 }, 4: { min: 4, max: 7 } }
   },
