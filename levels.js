@@ -89,7 +89,7 @@ const levels = {
   },
   17: { 
     expr: "A*(B-C)+D*(E-F)", 
-    story: "Jesper skal til mekanikerenDer er {0} kasser med {1} legetøj i hver, men {2} er ødelagte pr. kasse. Derudover er der {3} ekstra poser med {4} legetøj i hver, dog er {5} stykker legetøj ødelagt pr. pose . Hvor mange gode stykker legetøj er der i alt?",
+    story: "Jesper skal til mekanikeren. Der er {0} kasser med {1} legetøj i hver, men {2} er ødelagte pr. kasse. Derudover er der {3} ekstra poser med {4} legetøj i hver, dog er {5} stykker legetøj ødelagt pr. pose . Hvor mange gode stykker legetøj er der i alt?",
     ranges: { 0: { min: 5, max: 10 }, 1: { min: 5, max: 8 }, 2: { min: 1, max: 4 }, 3: { min: 5, max: 10 }, 4: { min: 2, max: 5 }, 5: { min: 2, max: 2 }}
   },
   18: { 
