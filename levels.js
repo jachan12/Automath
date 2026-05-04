@@ -60,7 +60,7 @@ const levels = {
   11: { 
     expr: "(A+B)*C - D", 
     story: "Der er {0} drenge og {1} piger i en klasse. Hver elev får {2} klistermærker. Læreren tager {3} klistermærker tilbage. Hvor mange klistermærker er der uddelt i alt?",
-    ranges: { 0: { min: 10, max: 15 }, 1: { min: 10, max: 15 }, 2: { min: 1, max: 5 }, 3: { min: 1, max: 20 } }
+    ranges: { 0: { min: 10, max: 15 }, 1: { min: 10, max: 15 }, 2: { min: 2, max: 5 }, 3: { min: 2, max: 20 } }
   },
   12: { 
     expr: "A*(B-C)", 
@@ -78,18 +78,18 @@ const levels = {
     ranges: { 0: { min: 4, max: 8 }, 1: { min: 5, max: 9 }, 2: { min: 1, max: 3 }, 3: { min: 3, max: 8 }, 4: { min: 2, max: 6 } }
   },
   15: { 
-    expr: "A+B-D", 
+    expr: "A+B-C", 
     story: "Der er {0} børn på legepladsen, og {1} flere kommer til. Ved gyngerne står der {2} cykler. Senere går {3} børn hjem. Hvor mange børn er der tilbage?",
     ranges: { 0: { min: 10, max: 20 }, 1: { min: 3, max: 8 }, 2: { min: 4, max: 12 }, 3: { min: 1, max: 5 } }
   },
   16: { 
-    expr: "A*(B-C)+D*E", 
-    story: "Der er {0} kasser med {1} kuglepenne i hver, men {2} virker ikke i hver kasse. Derudover er der {3} pakker med {4} kuglepenne i hver som alle virker. På lærerens bord ligger nogle linealer. Hvor mange kuglepenne virker i alt?",
+    expr: "A*(B-C)+D*(E-C)", 
+    story: "Der er {0} kasser med {1} kuglepenne i hver, men {2} virker ikke i hver kasse. Derudover er der {3} pakker med {4} kuglepenne i hver. På lærerens bord ligger nogle linealer. Hvor mange kuglepenne virker i alt?",
     ranges: { 0: { min: 4, max: 8 }, 1: { min: 5, max: 9 }, 2: { min: 1, max: 3 }, 3: { min: 3, max: 6 }, 4: { min: 4, max: 7 } }
   },
   17: { 
     expr: "A*(B-C)+D*(E-F)", 
-    story: "Jesper skal til mekanikeren. Der er {0} kasser med {1} legetøj i hver, men {2} er ødelagte pr. kasse. Derudover er der {3} ekstra poser med {4} legetøj i hver, dog er {5} stykker legetøj ødelagt pr. pose . Hvor mange gode stykker legetøj er der i alt?",
+    story: "Jesper skal til mekanikerenDer er {0} kasser med {1} legetøj i hver, men {2} er ødelagte pr. kasse. Derudover er der {3} ekstra poser med {4} legetøj i hver, dog er {5} stykker legetøj ødelagt pr. pose . Hvor mange gode stykker legetøj er der i alt?",
     ranges: { 0: { min: 5, max: 10 }, 1: { min: 5, max: 8 }, 2: { min: 1, max: 4 }, 3: { min: 5, max: 10 }, 4: { min: 2, max: 5 }, 5: { min: 2, max: 2 }}
   },
   18: { 
@@ -128,9 +128,14 @@ const levels = {
     ranges: { 0: { min: 5, max: 10 }, 1: { min: 5, max: 8 }, 2: { min: 1, max: 4 }, 3: { min: 5, max: 10 }, 4: { min: 2, max: 5 }, 5: { min: 2, max: 2 }}
   },
   25: { 
-    expr: "A+B+C+D+E+F+G+H+I+J", 
+    expr: "A*(B-C)+D*(E-F)+G*(H-I)+J", 
     story: "Der er {0} kasser med {1} bolde i hver, men {2} er flade pr. kasse. Derudover er der {3} poser med {4} bolde i hver, hvor {5} mangler luft. Ved siden af står {6} kurve med {7} bolde i hver, men {8} i hver kurv er ødelagte. Til sidst kommer der {9} ekstra bolde. Hvor mange gode bolde er der i alt?",
     ranges: { 0: { min: 3, max: 6 }, 1: { min: 6, max: 10 }, 2: { min: 1, max: 3 }, 3: { min: 3, max: 6 }, 4: { min: 5, max: 9 }, 5: { min: 1, max: 3 }, 6: { min: 2, max: 5 }, 7: { min: 4, max: 8 }, 8: { min: 1, max: 3 }, 9: { min: 3, max: 7 } }
+  },
+  26: { 
+    expr: "A * G",
+    story: "En idrætslærer på {9} år skal købe ind til sæsonen. Han har et budget på {1} kr. og kigger på {0} forskellige typer bolde. Han beslutter sig for at købe {0} net med bolde. Hvert net vejer {2} kg og koster {3} kr. i indkøb, men dertil kommer en moms på {4}% og et fragtgebyr på {5} kr. pr. ekspedition. Læreren bruger {8} minutter på at tjekke, at der er {6} bolde i hvert net, før han betaler med en værdikupon på {7} kr. Hvor mange bolde har læreren købt i alt?",
+    ranges: { 0: { min: 6, max: 12 }, 1: { min: 3000, max: 5000 }, 2: { min: 3, max: 7 }, 3: { min: 250, max: 450 }, 4: { min: 10, max: 25 }, 5: { min: 45, max: 95 }, 6: { min: 8, max: 15 }, 7: { min: 100, max: 200 }, 8: { min: 15, max: 30 }, 9: { min: 35, max: 60 } }
   },
 
   
@@ -261,34 +266,8 @@ const gameScene = {
     return this.facit;
   },
 
-  compareWithResultElement() {
-    const target = this.getFacit();
-    const resEl = document.getElementById('result');
-    if (!resEl) return;
-
-    const m = String(resEl.textContent).match(/(-?\d+(?:\.\d+)?)/);
-    const studentValue = m ? Number(m[1]) : NaN;
-
-    const correct = Number.isFinite(studentValue) && Math.abs(studentValue - target) < 1e-9;
-
-    let fb = document.getElementById('facit-feedback');
-    if (!fb) {
-      const host = document.getElementById('regnehistorie-text');
-      if (host && host.parentElement) {
-        fb = document.createElement('div');
-        fb.id = 'facit-feedback';
-        fb.style.marginTop = '8px';
-        fb.style.fontWeight = 'bold';
-        host.parentElement.appendChild(fb);
-      }
-    }
-    if (fb) {
-      fb.textContent = correct ? 'Rigtigt ✅' : `Forkert ❌ (facit: ${target})`;
-      fb.style.color = correct ? '#2e7d32' : '#c62828';
-    } else {
-      alert(correct ? 'Rigtigt ✅' : `Forkert ❌ (facit: ${target})`);
-    }
-  },
+  // Denne funktion blev erstattet af feedback-systemet i "point og robot.js"
+  // compareWithResultElement() er nu slettet - feedback vises via showFeedback() i stedet
 
   loadLevel(levelNum) {
     this.generateStory(levelNum);
@@ -318,10 +297,5 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
-  const calcBtn = document.getElementById('calculate-button');
-  if (calcBtn) {
-    calcBtn.addEventListener('click', () => {
-      setTimeout(() => gameScene.compareWithResultElement(), 0);
-    });
-  }
+  // calculateButton feedback nu håndteres af "point og robot.js" - fjernet compareWithResultElement() kald
 });

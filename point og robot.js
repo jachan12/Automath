@@ -1,8 +1,10 @@
 (function () {
   let cooldown = false;
+  let isChecking = false;
   const BASE_POINTS = 5;
-  const POINTS_PER_LEVEL = 2;
+  const POINTS_PER_LEVEL = 0;
   const COOLDOWN_MS = 2000;
+  const CHECKING_MS = 1500; // Simuleret tjeknings-tid
 
   // cooldown for at forhindre spam af point per niveau (3000ms)
   const LEVEL_POINT_COOLDOWN_MS = 3000;
@@ -32,9 +34,13 @@
     fb.style.color = color;
   }
 
+  function showCheckingAnimation() {
+    showFeedback("Regner løsningen...", "#1976d2");
+  }
+
   document.addEventListener('student-answer', (e) => {
-    if (cooldown) {
-      showFeedback("Vent lidt før du prøver igen...", "#c62828");
+    if (cooldown || isChecking) {
+      showFeedback("Vent lidt før du prøver igen...", "#1976d2");
       return;
     }
 
@@ -42,35 +48,45 @@
     const facit = window.Levels?.getFacit?.();
     const level = window.game.scene.getCurrentLevel() || 1;
 
-    // check per-level cooldown (forhindrer spam ved at skifte/klikke niveau osv.)
-    const last = levelCooldowns.get(level) || 0;
-    if (Date.now() - last < LEVEL_POINT_COOLDOWN_MS) {
-      showFeedback("Vent lidt før du prøver igen på dette niveau...", "#c62828");
-      return;
-    }
+    // Vis tjeknings-animation
+    isChecking = true;
+    if (btn) btn.disabled = true;
+    showCheckingAnimation();
 
-    if (Number.isFinite(facit) && Number.isFinite(studentValue) && Math.abs(facit - studentValue) < 1e-9) {
-      // registrer tidspunkt før points tildeles (blokér gentildeling i cooldown-periode)
-      levelCooldowns.set(level, Date.now());
-      const pts = BASE_POINTS + (level - 1) * POINTS_PER_LEVEL;
-      if (window.game && typeof window.game.addPoints === 'function') {
-        window.game.addPoints(pts);
-      }
-      if (window.game && typeof window.game.completeLevel === 'function') {
-        window.game.completeLevel(level);
-      }
-      showFeedback(`Rigtigt! +${pts} point`, "#2e7d32");
+    // Simuleret tjeknings-delay
+    setTimeout(() => {
+      isChecking = false;
 
-      cooldown = true;
-      if (btn) btn.disabled = true;
-      setTimeout(() => {
-        cooldown = false;
+      if (Number.isFinite(facit) && Number.isFinite(studentValue) && Math.abs(facit - studentValue) < 1e-9) {
+        // Kun sæt cooldown ved RIGTIGT svar
+        levelCooldowns.set(level, Date.now());
+        const pts = BASE_POINTS + (level - 1) * POINTS_PER_LEVEL;
+        if (window.game && typeof window.game.addPoints === 'function') {
+          window.game.addPoints(pts);
+        }
+        if (window.game && typeof window.game.completeLevel === 'function') {
+          window.game.completeLevel(level);
+        }
+        showFeedback(`Rigtigt! +${pts} point`, "#2e7d32");
+
+        cooldown = true;
+        if (btn) btn.disabled = true;
+        setTimeout(() => {
+          cooldown = false;
+          if (btn) btn.disabled = false;
+        }, COOLDOWN_MS);
+      } else {
+        // Neutral feedback med afstand fra rigtige svar - INGEN COOLDOWN på forkert svar
+        if (Number.isFinite(facit)) {
+          // Hvis intet svar, behandl som 0
+          const value = Number.isFinite(studentValue) ? studentValue : 0;
+          const diff = Math.abs(facit - value);
+          showFeedback(`Du er ${diff} fra det rigtige svar. Prøv igen.`, "#1976d2");
+        }
+        // Knappen er nu tilgængelig igen - du kan prøve straks!
         if (btn) btn.disabled = false;
-        showFeedback("Prøv næste opgave eller vælg et nyt niveau.", "#1976d2");
-      }, COOLDOWN_MS);
-    } else {
-      showFeedback("Forkert eller manglende svar.", "#c62828");
-    }
+      }
+    }, CHECKING_MS);
   });
 
   window.resetCooldown = () => {
